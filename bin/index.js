@@ -1,44 +1,47 @@
 #!/usr/bin/env node
-var commandLineArgs = require('command-line-args');
-var jsdom = require('jsdom');
-var _ = require('lodash');
-var css = require('css');
-var path = require('path');
-var fs = require('fs');
-var defaultManifest = require('./default-manifest.json');
+const commandLineArgs = require('command-line-args');
+const jsdom = require('jsdom');
+const _ = require('lodash');
+const webshot = require('webshot');
+const css = require('css');
+const path = require('path');
+const fs = require('fs');
+const defaultManifest = require('./default-manifest.json');
 
 // Manifest object.
 var manifestObject = JSON.parse(JSON.stringify(defaultManifest));
 
 // Directory where command has been executed.
-var currentDir = process.cwd();
+const currentDir = process.cwd();
 
 // Command line arguments.
-var cli = commandLineArgs([
-  { name: 'src', alias: 's', type: String },   // Main template HTML file.
-  { name: 'stylesheet', type: String },        // Stylesheet name for parsing.
-  { name: 'output', alias: 'o', type: String } // Output folder.
+const cli = commandLineArgs([
+  { name: 'src', alias: 's', type: String },      // Main template HTML file.
+  { name: 'stylesheet', type: String },           // Stylesheet name for parsing.
+  { name: 'output', alias: 'o', type: String },   // Output folder.
+  { name: 'pictures', alias: 'p', type: Boolean } // Generate pictures of elements.
 ]);
 
 // Get CLI options.
-var options = cli.parse();
-var optionsSource = path.normalize(options.src);
-var optionsStylesheet = options.stylesheet;
-var optionsOutput = options.output;
+const options = cli.parse();
+const optionsSource = path.normalize(options.src || null);
+const optionsStylesheet = options.stylesheet || null;
+const optionsOutput = options.output || null;
+const optionsPictures = options.pictures || false;
 
 // Template paths.
-var templateRoot = path.parse(path.join(currentDir, optionsSource)).dir;
-var assetsRoot = path.join(templateRoot, 'assets');
-var buildDir = path.join(currentDir, path.normalize(optionsOutput));
+const templateRoot = path.parse(path.join(currentDir, optionsSource)).dir;
+const assetsRoot = path.join(templateRoot, 'assets');
+const buildDir = path.join(currentDir, path.normalize(optionsOutput));
 
 // Template HTML file.
-var templateHTMLFile = fs.readFileSync(
+const templateHTMLFile = fs.readFileSync(
   path.join(currentDir, optionsSource),
   { encoding: 'utf8' }
 );
 
 // Template stylesheet file.
-var templateStylesheetFile = fs.readFileSync(
+const templateStylesheetFile = fs.readFileSync(
   path.join(assetsRoot, optionsStylesheet),
   { encoding: 'utf8' }
 );
@@ -55,18 +58,39 @@ function createManifestFile () {
 
   fs.open(filePath, 'w', function (err, fd) {
     if (err) {
-      throw 'error opening file: ' + err;
+      throw `Error opening file: ${err}`;
     }
 
     fs.write(fd, fileBuffer, 0, fileBuffer.length, null, function (err) {
       if (err) {
-        throw 'error opening file: ' + err;
+        throw `Error opening file: ${err}`;
       }
 
       fs.close(fd, function() {
-        console.log('file written');
+        console.log('Manifest file generated.');
       })
     });
+  });
+}
+
+// Create image of element.
+function takePictureOfElement (fileName, query) {
+  const pagePath = 'http://localhost:3000/';
+
+  if (!fileName || !query) {
+      return;
+  }
+
+  webshot(pagePath, fileName, {
+    siteType: 'url',
+    windowSize: {
+        width: 1200,
+        height: 750
+    },
+    captureSelector: query,
+    renderDelay: 3000
+  }, function(err) {
+    if (err) return console.log(err);
   });
 }
 
@@ -97,24 +121,35 @@ function getValueOfPropertyOfSelector (_selector, _property) {
   return result;
 }
 
-_.map(manifestObject.design.colors, (color, selector) => {
-  const val = getValueOfPropertyOfSelector(selector, 'color');
+function getColors () {
+  _.map(manifestObject.design.colors, (color, selector) => {
+    const val = getValueOfPropertyOfSelector(selector, 'color');
 
-  if (val !== null) {
-    manifestObject.design.colors[selector] = val;
-  }
-});
-
-const baseFontSize = getValueOfPropertyOfSelector('html', 'font-size');
-const baselineSize = getValueOfPropertyOfSelector('body', 'line-height');
-
-if (baseFontSize && baselineSize) {
-  manifestObject.design.typography.size.basefont = parseInt(baseFontSize);
-  manifestObject.design.typography.size.baseline = parseFloat(baselineSize);
+    if (!_.isNull(val)) {
+      manifestObject.design.colors[selector] = val;
+    }
+  });
 }
 
+function getTypography () {
+  const baseFontSize = getValueOfPropertyOfSelector('html', 'font-size');
+  const baselineSize = getValueOfPropertyOfSelector('body', 'line-height');
+
+  if (baseFontSize) {
+    manifestObject.design.typography.size.basefont = parseInt(baseFontSize);
+  }
+
+  if (baselineSize) {
+    manifestObject.design.typography.size.baseline = parseFloat(baselineSize);
+  }
+}
+
+// Run main things.
+getColors();
+getTypography();
+
 // Create virtual DOM page.
-var doc = jsdom.env({
+const doc = jsdom.env({
   html: templateHTMLFile,
   scripts: [
     'http://code.jquery.com/jquery.js'
@@ -126,46 +161,63 @@ var doc = jsdom.env({
 
     // Add assets to manifest file.
     assets.each(function () {
-      var asset = $(this);
-      var assetType = asset.attr('data-asset');
+      const asset = $(this);
+      const assetType = asset.attr('data-asset');
 
-      if (assetType === 'css') {
-        manifestObject.external.core.push(
-          { type: 'css', src: asset.attr('href') }
-        );
-      } else if (assetType === 'js') {
-        manifestObject.external.core.push(
-          { type: 'js', src: asset.attr('src') }
-        );
+      switch (assetType) {
+        case 'css':
+        case 'js': {
+          let assetSource = asset.attr('src') || asset.attr('href');
+          const { dir, base } = path.parse(assetSource);
+
+          if (dir === 'assets') {
+            assetSource = path.join(dir, 'template', base).split(path.sep).join('/');
+          }
+
+          manifestObject = _.assign({}, manifestObject, {
+            external: {
+              core: [
+                ...manifestObject.external.core,
+                { type: assetType, src: assetSource }
+              ]
+            }
+          });
+
+          break;
+        }
+
+        default:
+          break;
       }
     });
 
     // Add blocks to manifest file.
     blocks.each(function (i) {
-      var block = $(this);
-      var blockType = block.attr('data-type');
-      var blockTitle = block.attr('data-title');
-      var features = {
-        videoBackground: false,
-        imageBackground: false,
-        colorBackground: false,
-        countdown: false
-      };
+      const block = $(this);
+      const blockType = block.attr('data-type');
+      const blockTitle = block.attr('data-title');
 
       if (!blockType || !blockTitle) {
-          return;
+        return;
       }
 
-      var blockSource = _.trimEnd(_.trimStart(
+      let blockCategory = _.findIndex(manifestObject.blocks, ['type', blockType]);
+      const blockSource = _.trimEnd(_.trimStart(
         block
           .clone()
-          .removeAttr('data-type')
+          .removeAttr('data-type') // Remove junk attributes.
           .removeAttr('data-title')
           .removeAttr('data-picture')
           .wrap('<div/>')
           .parent()
           .html()
       ));
+      var features = {
+        videoBackground: false,
+        imageBackground: false,
+        colorBackground: false,
+        countdown: false
+      };
 
       if (block.find('.countdown').length) {
         features.countdown = true;
@@ -183,22 +235,58 @@ var doc = jsdom.env({
         features.imageBackground = true;
       }
 
-      var isTypeInBlocks = _.findIndex(manifestObject.blocks, ['type', blockType]);
+      if (blockCategory === -1) {
+        manifestObject = _.assign({}, manifestObject, {
+          blocks: [
+            ...manifestObject.blocks,
+            { type: blockType, items: [] }
+          ]
+        });
 
-      if (isTypeInBlocks == -1) {
-        manifestObject.blocks.push(
-          { type: blockType, items: [] }
-        );
+        blockCategory = _.findIndex(manifestObject.blocks, ['type', blockType]);
       }
 
-      isTypeInBlocks = _.findIndex(manifestObject.blocks, ['type', blockType]);
-
-      manifestObject.blocks[isTypeInBlocks].items.push(_.assign({}, { features }, {
-        title: blockTitle,
-        thumbnail: `assets/template/${blockType}-${_.kebabCase(blockTitle)}.png`,
-        source: blockSource
-      }));
+      manifestObject.blocks[blockCategory] = _.assign({}, manifestObject.blocks[blockCategory], {
+        items: [
+          ...manifestObject.blocks[blockCategory].items,
+          _.assign({}, { features }, {
+            title: blockTitle,
+            thumbnail: `assets/template/${blockType}-${_.kebabCase(blockTitle)}.png`,
+            source: blockSource
+          })
+        ]
+      });
     });
+
+    // Take pictures.
+    if (optionsPictures === true) {
+      const pictureElements = $('[data-picture]');
+      const blocksLength = pictureElements.size();
+
+      pictureElements.each(function (i) {
+        const elem = $(this);
+        const dataType = elem.attr('data-type');
+        const dataTitle = elem.attr('data-title');
+        const dataPicture = elem.attr('data-picture');
+
+        if (!dataTitle || !dataTitle) {
+          return console.log(`WARNING: data-picture="${dataPicture}" missing parameters!`);
+        }
+
+        const query = `[data-picture="${dataPicture}"]`;
+        const fileName = `dist/${dataType}-${_.kebabCase(dataTitle)}.png`;
+
+        switch (+dataPicture) {
+            case 23:
+            case 28:
+              takePictureOfElement(fileName, query);
+              break;
+
+            default:
+              break;
+        }
+      });
+    }
 
     createManifestFile();
   }

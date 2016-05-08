@@ -7,21 +7,21 @@
 
   "design": {
     "colors": {
-      "body": null,
-      "a": null,
-      "a:hover": null,
-      "a:visited": null,
-      "p": null,
-      "h1": null,
-      "h2": null,
-      "h3": null,
-      "h4": null,
-      "h5": null,
-      "h6": null,
-      "blockquote": null,
-      "b": null,
-      "i": null,
-      "em": null
+      "body": "#333",
+      "a": "#444",
+      "a:hover": "#eee",
+      "a:visited": "#333",
+      "p": "#444",
+      "h1": "#111",
+      "h2": "#222",
+      "h3": "#333",
+      "h4": "#444",
+      "h5": "#555",
+      "h6": "#666",
+      "blockquote": "#666",
+      "b": "#333",
+      "i": "#444",
+      "em": "#444"
     },
 
     "typography": {

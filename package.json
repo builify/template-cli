@@ -7,7 +7,11 @@
     "command-line-args": "^2.1.6",
     "css": "^2.2.1",
     "jsdom": "^9.0.0",
-    "lodash": "^4.11.2"
+    "lodash": "^4.11.2",
+    "webshot": "^0.18.0"
+  },
+  "engines": {
+    "node": ">=6.1.0"
   },
   "scripts": {
     "test": "./bin/index.js"
@@ -19,7 +23,7 @@
     "type": "git",
     "url": "git+https://github.com/Trip-Trax/tt-template-cli.git"
   },
-  "author": "Genert Org <contact@thedeveloper.xyz> (http://thedeveloper.xyz/)",
+  "author": "Genert Org <contact@genert.org> (http://genert.org)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Trip-Trax/tt-template-cli/issues"
