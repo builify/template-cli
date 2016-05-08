@@ -1,0 +1,34 @@
+{
+  "external": {
+    "core": []
+  },
+
+  "blocks": [],
+
+  "design": {
+    "colors": {
+      "body": null,
+      "a": null,
+      "a:hover": null,
+      "a:visited": null,
+      "p": null,
+      "h1": null,
+      "h2": null,
+      "h3": null,
+      "h4": null,
+      "h5": null,
+      "h6": null,
+      "blockquote": null,
+      "b": null,
+      "i": null,
+      "em": null
+    },
+
+    "typography": {
+      "size": {
+        "basefont": 16,
+        "baseline": 24
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "tt-template-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "dependencies": {
+    "command-line-args": "^2.1.6",
+    "css": "^2.2.1",
+    "jsdom": "^9.0.0",
+    "lodash": "^4.11.2"
+  },
+  "scripts": {
+    "test": "./bin/index.js"
+  },
+  "bin": {
+    "testcli": "./bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Trip-Trax/tt-template-cli.git"
+  },
+  "author": "Genert Org <contact@thedeveloper.xyz> (http://thedeveloper.xyz/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Trip-Trax/tt-template-cli/issues"
+  },
+  "homepage": "https://github.com/Trip-Trax/tt-template-cli#readme"
+}
