@@ -16,9 +16,7 @@
   "scripts": {
     "test": "./bin/index.js"
   },
-  "bin": {
-    "testcli": "./bin/index.js"
-  },
+  "bin": "./bin/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Trip-Trax/tt-template-cli.git"
