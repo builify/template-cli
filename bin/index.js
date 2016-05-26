@@ -31,7 +31,7 @@ const optionsPictures = options.pictures || false;
 
 // Template paths.
 const templateRoot = path.parse(path.join(currentDir, optionsSource)).dir;
-const assetsRoot = path.join(templateRoot, 'assets');
+const assetsRoot = path.join(templateRoot, 'assets', 'template');
 const buildDir = path.join(currentDir, path.normalize(optionsOutput));
 
 // Template HTML file.
