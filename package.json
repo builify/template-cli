@@ -21,7 +21,7 @@
     "type": "git",
     "url": "git+https://github.com/Trip-Trax/tt-template-cli.git"
   },
-  "author": "Genert Org <contact@genert.org> (http://genert.org)",
+  "author": "Genert Org <orggenert@gmail.com> (http://genert.github.io)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Trip-Trax/tt-template-cli/issues"
