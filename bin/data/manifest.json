@@ -27,7 +27,7 @@
     "typography": {
       "size": {
         "basefont": 16,
-        "baseline": 24
+        "baseline": 1
       }
     }
   }

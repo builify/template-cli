@@ -4,24 +4,30 @@
   "description": "",
   "main": "dist/index.js",
   "dependencies": {
-    "command-line-args": "^2.1.6",
-    "css": "^2.2.1",
-    "jsdom": "^9.0.0",
-    "lodash": "^4.11.2",
-    "webshot": "^0.18.0"
+    "command-line-args": "*",
+    "css": "*",
+    "jsdom": "*",
+    "lodash": "*",
+    "webshot": "*"
   },
   "engines": {
     "node": ">=6.1.0"
   },
   "scripts": {
-    "test": "./bin/index.js"
+    "test": "/bin/index.js"
   },
-  "bin": "./bin/index.js",
+  "bin": {
+    "tttemplate": "./bin/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Trip-Trax/tt-template-cli.git"
   },
-  "author": "Genert Org <orggenert@gmail.com> (http://genert.github.io)",
+  "author": {
+    "name": "Genert Org",
+    "email": "contact@genert.org",
+    "url": "http://genert.org"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Trip-Trax/tt-template-cli/issues"
