@@ -2,6 +2,14 @@
 
 > Trip-Trax's template files generator for BUILify, a static website creator.
 
+## Installation
+We recommend installing locally and running through `package.json` scripts.
+
+```shell
+npm i template-cli -D
+```
+
+## Usage
 ```shell
 template-cli --src public/index.html --stylesheet template.css --output builder
 ```
