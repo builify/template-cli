@@ -7,12 +7,13 @@ const createManifestFile = require('./create-manifest-file');
 const captureElementVisualRepresentation = require('./capture-element-visual-representation');
 
 class ParseHTML {
-  constructor (htmlPath, manifestObject, buildDir) {
+  constructor (htmlPath, manifestObject, buildDir, takePictures = false) {
     this._htmlFile = null;
     this._doc = null;
 
     this._manifest = manifestObject;
     this._buildDir = buildDir;
+    this._takePictures = takePictures;
 
     this.getHTMLFile(htmlPath);
   }
@@ -42,9 +43,22 @@ class ParseHTML {
     var $ = window.$;
     var blocks = $('body').children();
     var assets = $('[data-asset]');
-    let manifestObject = this._manifest;
 
     // Add assets to manifest file.
+    this.parseHTMLAssets($, assets);
+
+    // Add blocks to manifest file.
+    this.parseHTMLBlocks($, blocks);
+
+    // Take pictures.
+    this._takePictures && this.takePictures($);
+
+    this.saveManifestFile();
+  }
+
+  parseHTMLAssets ($, assets) {
+    let manifestObject = this._manifest;
+
     assets.each(function () {
       const asset = $(this);
       const assetType = asset.attr('data-asset');
@@ -76,7 +90,12 @@ class ParseHTML {
       }
     });
 
-    // Add blocks to manifest file.
+    this._manifest = manifestObject;
+  }
+
+  parseHTMLBlocks ($, blocks) {
+    let manifestObject = this._manifest;
+
     blocks.each(function (i) {
       const block = $(this);
       const blockType = block.attr('data-type');
@@ -142,38 +161,41 @@ class ParseHTML {
         ]
       });
     });
-/*
-    // Take pictures.
-    if (optionsPictures === true) {
-      const pictureElements = $('[data-picture]');
-      const blocksLength = pictureElements.size();
 
-      pictureElements.each(function (i) {
-        const elem = $(this);
-        const dataType = elem.attr('data-type');
-        const dataTitle = elem.attr('data-title');
-        const dataPicture = elem.attr('data-picture');
+    this._manifest = manifestObject;
+  }
 
-        if (!dataTitle || !dataTitle) {
-          return console.log(`WARNING: data-picture="${dataPicture}" missing parameters!`);
-        }
+  saveManifestFile () {
+    createManifestFile(this._manifest, this._buildDir);
+  }
 
-        const query = `[data-picture="${dataPicture}"]`;
-        const fileName = `dist/${dataType}-${_.kebabCase(dataTitle)}.png`;
+  takePictures ($) {
+    const pictureElements = $('[data-picture]');
+    const blocksLength = pictureElements.size();
 
-        switch (+dataPicture) {
-            case 23:
-            case 28:
-              captureElementVisualRepresentation(fileName, query);
-              break;
+    pictureElements.each(function (i) {
+      const elem = $(this);
+      const dataType = elem.attr('data-type');
+      const dataTitle = elem.attr('data-title');
+      const dataPicture = elem.attr('data-picture');
 
-            default:
-              break;
-        }
-      });
-    }
-*/
-    createManifestFile(manifestObject, this._buildDir);
+      if (!dataTitle || !dataTitle) {
+        return console.log(`WARNING: data-picture="${dataPicture}" missing parameters!`);
+      }
+
+      const query = `[data-picture="${dataPicture}"]`;
+      const fileName = `dist/${dataType}-${_.kebabCase(dataTitle)}.png`;
+
+      switch (+dataPicture) {
+          case 23:
+          case 28:
+            captureElementVisualRepresentation(fileName, query);
+            break;
+
+          default:
+            break;
+      }
+    });
   }
 }
 

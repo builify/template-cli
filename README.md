@@ -1,10 +1,11 @@
 # tt-template-cli
 
-> Trip-Trax's template manifest generator for TT-Builder.
+> Trip-Trax's template files generator for BUILify, a static website creator.
 
 ```shell
-tt-template-cli --src template/index.html --stylesheet template.css --output dist
+template-cli --src public/index.html --stylesheet template.css --output builder
 ```
+
 ## Contributions & Issues
 Contributions are welcome. Please clearly explain the purpose of the PR and follow the current style.
 

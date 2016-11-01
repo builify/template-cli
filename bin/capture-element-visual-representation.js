@@ -13,7 +13,7 @@ function captureElementVisualRepresentation (fileName, query) {
     renderDelay: globals.webshotConfiguration.renderDelay
   }, (err) => {
     if (err) {
-      return console.log(err);
+      throw err;
     }
   });
 }

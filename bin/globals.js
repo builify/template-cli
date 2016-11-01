@@ -8,6 +8,7 @@ globals.currentDir = process.cwd();
 
 // Command line arguments.
 globals.cli = commandLineArgs([
+  { name: 'help', alias: 'h', type: Boolean },       // Help info.
   { name: 'src', alias: 's', type: String },         // Main template HTML file.
   { name: 'stylesheet', alias: 'c', type: String },  // Stylesheet name for parsing.
   { name: 'output', alias: 'o', type: String },      // Output folder.

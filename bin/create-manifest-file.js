@@ -14,7 +14,7 @@ function createManifestFile (manifestObject, buildDir, fileName = 'manifest.json
 
     fs.write(fd, fileBuffer, 0, fileBuffer.length, null, (err) => {
       if (err) {
-        throw `Error opening file: ${err}`;
+        throw Error(`Error opening file: ${err}`);
       }
 
       fs.close(fd, () => {
