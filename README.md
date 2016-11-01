@@ -11,8 +11,17 @@ npm i template-cli -D
 
 ## Usage
 ```shell
-template-cli --src public/index.html --stylesheet template.css --output builder
+template-cli --src public/index.html --stylesheet public/assets/template/template.css --output builder
 ```
+
+### Source (--src)
+The HTML file path, which will be used to generate template files.
+
+### Stylesheet (--stylesheet)
+The stylesheet file path, which will be used to generate template files.
+
+### Output folder (--output)
+The path in what the template files will be allocated.
 
 ## Contributions & Issues
 Contributions are welcome. Please clearly explain the purpose of the PR and follow the current style.
