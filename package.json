@@ -1,6 +1,6 @@
 {
   "name": "template-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "dist/index.js",
   "dependencies": {
@@ -12,9 +12,6 @@
   },
   "engines": {
     "node": ">=6.1.0"
-  },
-  "scripts": {
-    "test": "/bin/index.js"
   },
   "bin": {
     "template-cli": "./bin/index.js"
