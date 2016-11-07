@@ -62,6 +62,8 @@ class GetStyling {
 
       if (!_isNull(val)) {
         this._manifest.design.colors[selector] = val;
+
+        console.log(`CSS: Set selector "${selector}" color value to "${val}".`)
       }
     });
 
@@ -74,10 +76,12 @@ class GetStyling {
 
     if (baseFontSize) {
       this._manifest.design.typography.size.basefont = parseInt(baseFontSize);
+      console.log(`CSS: Set font-size value to "${parseInt(baseFontSize)}".`);
     }
 
     if (baselineSize) {
       this._manifest.design.typography.size.baseline = parseFloat(baselineSize);
+      console.log(`CSS: Set baseline value to "${parseFloat(baselineSize)}".`);
     }
 
     return this;

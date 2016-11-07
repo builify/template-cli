@@ -6,11 +6,6 @@ function parseOptions (options) {
     return false;
   }
 
-  if (options.help) {
-    console.log('Read README.md');
-    return false;
-  }
-
   if (!options.src) {
     throw Error('No source defined.');
   }

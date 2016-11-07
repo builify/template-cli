@@ -29,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/Trip-Trax/tt-template-cli/issues"
   },
-  "homepage": "https://github.com/Trip-Trax/tt-template-cli#readme"
+  "homepage": "https://github.com/Trip-Trax/tt-template-cli#readme",
+  "devDependencies": {
+    "commander": "^2.9.0"
+  }
 }

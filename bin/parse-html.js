@@ -82,6 +82,8 @@ class ParseHTML {
             }
           });
 
+          console.log(`ASSETS: Adding "${assetSource}" (${assetType})`);
+
           break;
         }
 
@@ -160,6 +162,8 @@ class ParseHTML {
           })
         ]
       });
+
+      console.log(`HTML: Adding "${blockTitle}" (${blockType})`);
     });
 
     this._manifest = manifestObject;
