@@ -40,8 +40,8 @@ class ParseHTML {
   }
 
   parseHTML (err, window) {
-    var $ = window.$;
-    var blocks = $('body').children();
+    const $ = window.$;
+    const blocks = $('body').children();
     var assets = $('[data-asset]');
 
     // Add assets to manifest file.
@@ -58,6 +58,10 @@ class ParseHTML {
 
   parseHTMLAssets ($, assets) {
     let manifestObject = this._manifest;
+
+    if (!assets) {
+      return;
+    }
 
     assets.each(function () {
       const asset = $(this);
@@ -100,46 +104,44 @@ class ParseHTML {
 
     blocks.each(function (i) {
       const block = $(this);
-      const blockType = block.attr('data-type');
-      const blockTitle = block.attr('data-title');
+      let blockType = null;
+      let blockTitle = null;
+
+      block.contents()
+        .filter(function () {
+          return this.nodeType == 8;
+        })
+        .each(function () {
+          const text = this.nodeValue;
+          const lines = text.split('\n');
+
+          _.map(lines, (line) => {
+            if (line.length === 0) {
+              return;
+            }
+
+            const tagRegex = /^@{1}[^\s]+/g;
+            const tag = tagRegex.exec(line)[0];
+            const tagInfo = line.substring(tag.length + 1);
+
+            if (!tag || !tagInfo) {
+              return;
+            }
+
+            if (tag === '@title') {
+              blockTitle = tagInfo;
+            } else if (tag === '@category') {
+              blockType = tagInfo;
+            }
+          });
+      });
 
       if (!blockType || !blockTitle) {
         return;
       }
 
+      // Get block category.
       let blockCategory = _.findIndex(manifestObject.blocks, ['type', blockType]);
-      const blockSource = _.trimEnd(_.trimStart(
-        block
-          .clone()
-          .removeAttr('data-type') // Remove junk attributes.
-          .removeAttr('data-title')
-          .removeAttr('data-picture')
-          .wrap('<div/>')
-          .parent()
-          .html()
-      ));
-      var features = {
-        videoBackground: false,
-        imageBackground: false,
-        colorBackground: false,
-        countdown: false
-      };
-
-      if (block.find('.countdown').length) {
-        features.countdown = true;
-      }
-
-      if (block.find('.block-background-cover-color').length) {
-        features.colorBackground = true;
-      }
-
-      if (block.find('.block-video-holder').length) {
-        features.videoBackground = true;
-      }
-
-      if (_.startsWith(block.attr('style'), 'background-image')) {
-        features.imageBackground = true;
-      }
 
       if (blockCategory === -1) {
         manifestObject = _.assign({}, manifestObject, {
@@ -152,6 +154,47 @@ class ParseHTML {
         blockCategory = _.findIndex(manifestObject.blocks, ['type', blockType]);
       }
 
+      // Get block source.
+      const blockSource = _.trimEnd(_.trimStart(
+        block
+          .clone()
+          .removeAttr('data-type') // Remove junk attributes.
+          .removeAttr('data-title')
+          .removeAttr('data-picture')
+          .wrap('<div/>')
+          .parent()
+          .html()
+      ));
+
+      // Get block features.
+      let features = {
+        videoBackground: false,
+        imageBackground: false,
+        colorBackground: false,
+        countdown: false
+      };
+
+      if (block.find('.countdown').length) {
+        features.countdown = true;
+      }
+
+      if (block.find('.background-cover-color').length) {
+        features.colorBackground = true;
+      }
+
+      if (block.find('.background-image-holder').length) {
+        features.imageBackground = true;
+      }
+
+      if (block.find('.block-video-holder').length) {
+        features.videoBackground = true;
+      }
+
+      if (_.startsWith(block.attr('style'), 'background-image')) {
+        features.imageBackground = true;
+      }
+
+      // Assign block to category in manifest file.
       manifestObject.blocks[blockCategory] = _.assign({}, manifestObject.blocks[blockCategory], {
         items: [
           ...manifestObject.blocks[blockCategory].items,

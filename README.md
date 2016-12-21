@@ -14,6 +14,11 @@ npm i template-cli -D
 template-cli --src public/index.html --stylesheet public/assets/template/template.css --output builder
 ```
 
+## Options
+```shell
+template-cli --help
+```
+
 ### Source (--src)
 The HTML file path, which will be used to generate template files.
 
