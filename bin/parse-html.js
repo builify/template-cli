@@ -3,7 +3,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const path = require('path');
 const globals = require('./globals');
-const createManifestFile = require('./create-manifest-file');
+const createPackage = require('./create-package');
 const captureElementVisualRepresentation = require('./capture-element-visual-representation');
 
 class ParseHTML {
@@ -20,8 +20,7 @@ class ParseHTML {
 
   getHTMLFile (htmlPath) {
     this._htmlFile = fs.readFileSync(
-      htmlPath,
-      { encoding: 'utf8' }
+      htmlPath, { encoding: 'utf8' }
     );
 
     this.initializeJSDom();
@@ -69,7 +68,9 @@ class ParseHTML {
 
       switch (assetType) {
         case 'css':
-        case 'js': {
+        case 'stylesheet':
+        case 'js':
+        case 'javascript': {
           let assetSource = asset.attr('src') || asset.attr('href');
           const { dir, base } = path.parse(assetSource);
 
@@ -120,9 +121,15 @@ class ParseHTML {
               return;
             }
 
-            const tagRegex = /^@{1}[^\s]+/g;
-            const tag = tagRegex.exec(line)[0];
-            const tagInfo = line.substring(tag.length + 1);
+            const tagRegex = /@{1}[^\s]+/g;
+            const search = tagRegex.exec(line);
+            let tag = null;
+            let tagInfo = null;
+
+            if (search !== null) {
+              tag = search[0];
+              tagInfo = line.substring(tag.length + '- '.length + 1);
+            }
 
             if (!tag || !tagInfo) {
               return;
@@ -213,7 +220,7 @@ class ParseHTML {
   }
 
   saveManifestFile () {
-    createManifestFile(this._manifest, this._buildDir);
+    createPackage(this._manifest, this._buildDir);
   }
 
   takePictures ($) {
