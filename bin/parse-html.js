@@ -128,7 +128,7 @@ class ParseHTML {
 
             if (search !== null) {
               tag = search[0];
-              tagInfo = line.substring(tag.length + '- '.length + 1);
+              tagInfo = line.substring(tag.length + '- '.length + 3);
             }
 
             if (!tag || !tagInfo) {
@@ -142,6 +142,7 @@ class ParseHTML {
             }
           });
       });
+
 
       if (!blockType || !blockTitle) {
         return;
