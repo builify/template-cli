@@ -19,11 +19,17 @@ class ParseHTML {
   }
 
   getHTMLFile (htmlPath) {
-    this._htmlFile = fs.readFileSync(
-      htmlPath, { encoding: 'utf8' }
-    );
+    fs.stat(htmlPath, (error) => {
+      if (error === null) {
+        this._htmlFile = fs.readFileSync(
+          htmlPath, { encoding: 'utf8' }
+        );
 
-    this.initializeJSDom();
+        this.initializeJSDom();
+      } else {
+        throw error;
+      }
+    });
   }
 
   initializeJSDom () {
@@ -110,7 +116,7 @@ class ParseHTML {
 
       block.contents()
         .filter(function () {
-          return this.nodeType == 8;
+          return this.nodeType === 8;
         })
         .each(function () {
           const text = this.nodeValue;
@@ -143,6 +149,12 @@ class ParseHTML {
           });
       });
 
+      // Remove comments
+      block.contents().each(function () {
+        if (this.nodeType === 8) {
+          $(this).remove();
+        }
+      });
 
       if (!blockType || !blockTitle) {
         return;
