@@ -32,6 +32,10 @@
   },
   "homepage": "https://github.com/Trip-Trax/tt-template-cli#readme",
   "devDependencies": {
-    "commander": "^2.9.0"
+    "commander": "^2.9.0",
+    "imagemin": "^5.2.2",
+    "imagemin-mozjpeg": "^6.0.0",
+    "imagemin-pngquant": "^5.0.0",
+    "jimp": "^0.2.27"
   }
 }

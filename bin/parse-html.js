@@ -3,7 +3,6 @@ const fs = require('fs');
 const _ = require('lodash');
 const path = require('path');
 const globals = require('./globals');
-const createPackage = require('./create-package');
 const captureElementVisualRepresentation = require('./capture-element-visual-representation');
 
 class ParseHTML {
@@ -14,6 +13,8 @@ class ParseHTML {
     this._manifest = manifestObject;
     this._buildDir = buildDir;
     this._takePictures = takePictures;
+
+    this._takePicturesCallstack = [];
 
     this.getHTMLFile(htmlPath);
   }
@@ -54,9 +55,6 @@ class ParseHTML {
 
     // Add blocks to manifest file.
     this.parseHTMLBlocks($, blocks);
-
-    // Take pictures.
-    this._takePictures && this.takePictures($);
 
     this.saveManifestFile();
   }
@@ -108,6 +106,8 @@ class ParseHTML {
 
   parseHTMLBlocks ($, blocks) {
     let manifestObject = this._manifest;
+    const takePictures = this._takePictures;
+    let callStack = this._takePicturesCallstack;
 
     blocks.each(function (i) {
       const block = $(this);
@@ -158,6 +158,20 @@ class ParseHTML {
 
       if (!blockType || !blockTitle) {
         return;
+      }
+
+      const blockID = Math.random().toString(36).substr(2, 7);
+
+      // Take picture
+      if (takePictures) {
+        const query = `.${block.attr('class').split(' ').join('.')}`;
+        const fileName = `dist/${blockType}-${_.kebabCase(blockTitle)}.png`;
+
+        callStack.push({
+          fileName: fileName,
+          query: query,
+          id: blockID
+        });
       }
 
       // Get block category.
@@ -219,6 +233,7 @@ class ParseHTML {
         items: [
           ...manifestObject.blocks[blockCategory].items,
           _.assign({}, { features }, {
+            id: blockID,
             title: blockTitle,
             thumbnail: `assets/template/${blockType}-${_.kebabCase(blockTitle)}.png`,
             source: blockSource
@@ -230,39 +245,11 @@ class ParseHTML {
     });
 
     this._manifest = manifestObject;
+    this._takePicturesCallstack = callStack;
   }
 
   saveManifestFile () {
-    createPackage(this._manifest, this._buildDir);
-  }
-
-  takePictures ($) {
-    const pictureElements = $('[data-picture]');
-    const blocksLength = pictureElements.size();
-
-    pictureElements.each(function (i) {
-      const elem = $(this);
-      const dataType = elem.attr('data-type');
-      const dataTitle = elem.attr('data-title');
-      const dataPicture = elem.attr('data-picture');
-
-      if (!dataTitle || !dataTitle) {
-        return console.log(`WARNING: data-picture="${dataPicture}" missing parameters!`);
-      }
-
-      const query = `[data-picture="${dataPicture}"]`;
-      const fileName = `dist/${dataType}-${_.kebabCase(dataTitle)}.png`;
-
-      switch (+dataPicture) {
-          case 23:
-          case 28:
-            captureElementVisualRepresentation(fileName, query);
-            break;
-
-          default:
-            break;
-      }
-    });
+    captureElementVisualRepresentation(this._takePicturesCallstack, this._manifest, this._buildDir);
   }
 }
 

@@ -12,8 +12,8 @@ globals.manifest = JSON.parse(JSON.stringify(manifestData));
 globals.webshotConfiguration = {
   host: 'http://localhost:3000/',
   windowSize: {
-    width: 1200,
-    height: 750
+    width: 1920,
+    height: 1080
   },
   renderDelay: 3000
 };
