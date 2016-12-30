@@ -15,7 +15,7 @@ globals.webshotConfiguration = {
     width: 1920,
     height: 1080
   },
-  renderDelay: 3000
+  renderDelay: 1000
 };
 
 module.exports = globals;

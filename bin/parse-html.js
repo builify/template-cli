@@ -3,10 +3,13 @@ const fs = require('fs');
 const _ = require('lodash');
 const path = require('path');
 const globals = require('./globals');
+const createPackage = require('./create-package');
 const captureElementVisualRepresentation = require('./capture-element-visual-representation');
 
 class ParseHTML {
   constructor (htmlPath, manifestObject, buildDir, takePictures = false) {
+    this._blocksCount = 0;
+
     this._htmlFile = null;
     this._doc = null;
 
@@ -55,8 +58,6 @@ class ParseHTML {
 
     // Add blocks to manifest file.
     this.parseHTMLBlocks($, blocks);
-
-    this.saveManifestFile();
   }
 
   parseHTMLAssets ($, assets) {
@@ -108,6 +109,8 @@ class ParseHTML {
     let manifestObject = this._manifest;
     const takePictures = this._takePictures;
     let callStack = this._takePicturesCallstack;
+
+    let count = 0;
 
     blocks.each(function (i) {
       const block = $(this);
@@ -165,7 +168,7 @@ class ParseHTML {
       // Take picture
       if (takePictures) {
         const query = `.${block.attr('class').split(' ').join('.')}`;
-        const fileName = `dist/${blockType}-${_.kebabCase(blockTitle)}.png`;
+        const fileName = `builder/${blockID}.jpeg`;
 
         callStack.push({
           fileName: fileName,
@@ -241,15 +244,27 @@ class ParseHTML {
         ]
       });
 
+      count++;
+
       console.log(`HTML: Adding "${blockTitle}" (${blockType})`);
     });
 
+    this._blocksCount = count;
+
+    console.log(`Total blocks: ${this._blocksCount}\n`);
+
     this._manifest = manifestObject;
     this._takePicturesCallstack = callStack;
+
+    this.saveManifestFile();
+
+    if (this._takePictures) {
+      captureElementVisualRepresentation(this._takePicturesCallstack, this._buildDir);
+    }
   }
 
   saveManifestFile () {
-    captureElementVisualRepresentation(this._takePicturesCallstack, this._manifest, this._buildDir);
+    createPackage(this._manifest, this._buildDir);
   }
 }
 

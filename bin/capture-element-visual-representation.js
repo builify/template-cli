@@ -4,11 +4,14 @@ const Jimp = require('jimp');
 const globals = require('./globals');
 const createPackage = require('./create-package');
 
-function takeDaShot (stack, manifest, buildDir) {
-  if (stack.length > 17) {
-    const len = stack.length - 1;
+let dir = null;
 
+function takeDaShot (stack, buildDir) {
+  if (stack.length > 0) {
+    const len = stack.length - 1;
     const item = stack[len];
+
+    console.log(item);
 
     webshot(globals.webshotConfiguration.host, item.fileName, {
       siteType: 'url',
@@ -29,23 +32,28 @@ function takeDaShot (stack, manifest, buildDir) {
           .scale(0.5)
           .write(item.fileName);
 
-        console.log(`PICTURE: Took picture of "${item.query}".`);
+        console.log(`PICTURE: Took picture of "${item.id}".`);
 
         stack.pop();
-        takeDaShot(stack, manifest, buildDir);
+
+        console.log(dir);
+        takeDaShot(stack);
       }).catch(function (err) {
           console.error(err);
       });
     });
   } else {
-    console.log (manifest, buildDir);
-    createPackage(manifest, buildDir);
+    console.log ('PICTURES DONE');
   }
 }
 
-function captureElementVisualRepresentation (elementsToCapture) {
+function captureElementVisualRepresentation (elementsToCapture, buildDir) {
   if (!elementsToCapture || !_.isArray(elementsToCapture)) {
     return;
+  }
+
+  if (_.isNull(dir)) {
+    dir = buildDir;
   }
 
   takeDaShot(elementsToCapture);
