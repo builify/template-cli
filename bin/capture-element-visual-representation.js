@@ -11,7 +11,7 @@ function takeDaShot (stack, buildDir) {
     const len = stack.length - 1;
     const item = stack[len];
 
-    console.log(item);
+    console.log(`PICTURE: query: "${item.query}"; fileName: "${item.fileName}; id: "${item.id}`);
 
     webshot(globals.webshotConfiguration.host, item.fileName, {
       siteType: 'url',
@@ -32,11 +32,10 @@ function takeDaShot (stack, buildDir) {
           .scale(0.5)
           .write(item.fileName);
 
-        console.log(`PICTURE: Took picture of "${item.id}".`);
+        console.log(`PICTURE: Succesfully took picture of "${item.id}".`);
 
         stack.pop();
 
-        console.log(dir);
         takeDaShot(stack);
       }).catch(function (err) {
           console.error(err);

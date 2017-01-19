@@ -5,6 +5,7 @@ const path = require('path');
 const globals = require('./globals');
 const createPackage = require('./create-package');
 const captureElementVisualRepresentation = require('./capture-element-visual-representation');
+const utilities = require('./utilities');
 
 class ParseHTML {
   constructor (htmlPath, manifestObject, buildDir, takePictures = false) {
@@ -164,11 +165,12 @@ class ParseHTML {
       }
 
       const blockID = Math.random().toString(36).substr(2, 7);
+      const blockHash = Math.abs(utilities.hashCode(`${blockType}-${blockTitle}`));
 
       // Take picture
       if (takePictures) {
         const query = `.${block.attr('class').split(' ').join('.')}`;
-        const fileName = `builder/${blockID}.jpeg`;
+        const fileName = `builder/${blockHash}.jpeg`;
 
         callStack.push({
           fileName: fileName,
@@ -231,6 +233,8 @@ class ParseHTML {
         features.imageBackground = true;
       }
 
+      console.log(blockHash.toString());
+
       // Assign block to category in manifest file.
       manifestObject.blocks[blockCategory] = _.assign({}, manifestObject.blocks[blockCategory], {
         items: [
@@ -238,7 +242,7 @@ class ParseHTML {
           _.assign({}, { features }, {
             id: blockID,
             title: blockTitle,
-            thumbnail: `assets/template/${blockType}-${_.kebabCase(blockTitle)}.png`,
+            thumbnail: `assets/template/${blockHash.toString()}.jpeg`,
             source: blockSource
           })
         ]
