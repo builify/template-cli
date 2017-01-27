@@ -106,10 +106,47 @@ class ParseHTML {
     this._manifest = manifestObject;
   }
 
+  getBlockFeatures (block) {
+    let features = {
+      videoBackground: false,
+      imageBackground: false,
+      colorBackground: false,
+      countdown: false,
+      formInput: false
+    };
+
+    if (block.find('.countdown').length) {
+      features.countdown = true;
+    }
+
+    if (block.find('.background-cover-color').length) {
+      features.colorBackground = true;
+    }
+
+    if (block.find('.background-image-holder').length) {
+      features.imageBackground = true;
+    }
+
+    if (block.find('.block-video-holder').length) {
+      features.videoBackground = true;
+    }
+
+    if (_.startsWith(block.attr('style'), 'background-image')) {
+      features.imageBackground = true;
+    }
+
+    if (block.find('form')) {
+      features.formInput = true;
+    }
+
+    return features;
+  }
+
   parseHTMLBlocks ($, blocks) {
     let manifestObject = this._manifest;
     const takePictures = this._takePictures;
     let callStack = this._takePicturesCallstack;
+    const self = this;
 
     let count = 0;
 
@@ -205,34 +242,7 @@ class ParseHTML {
           .html()
       ));
 
-      // Get block features.
-      let features = {
-        videoBackground: false,
-        imageBackground: false,
-        colorBackground: false,
-        countdown: false
-      };
-
-      if (block.find('.countdown').length) {
-        features.countdown = true;
-      }
-
-      if (block.find('.background-cover-color').length) {
-        features.colorBackground = true;
-      }
-
-      if (block.find('.background-image-holder').length) {
-        features.imageBackground = true;
-      }
-
-      if (block.find('.block-video-holder').length) {
-        features.videoBackground = true;
-      }
-
-      if (_.startsWith(block.attr('style'), 'background-image')) {
-        features.imageBackground = true;
-      }
-
+      const features = self.getBlockFeatures(block);
       console.log(blockHash.toString());
 
       // Assign block to category in manifest file.
