@@ -116,30 +116,58 @@ class ParseHTML {
     };
 
     if (block.find('.countdown').length) {
-      features.countdown = true;
+      features = _.assign({}, features, {
+        countdown: true
+      });
     }
 
     if (block.find('.background-cover-color').length) {
-      features.colorBackground = true;
+      features = _.assign({}, features, {
+        colorBackground: true
+      });
     }
 
-    if (block.find('.background-image-holder').length) {
-      features.imageBackground = true;
+    if (block.find('.background-image-holder').length ||
+        _.startsWith(block.attr('style'), 'background-image')) {
+      features = _.assign({}, features, {
+        imageBackground: true
+      });
     }
 
     if (block.find('.block-video-holder').length) {
-      features.videoBackground = true;
+      features = _.assign({}, features, {
+        videoBackground: true
+      });
     }
 
     if (_.startsWith(block.attr('style'), 'background-image')) {
-      features.imageBackground = true;
+      features = _.assign({}, features, {
+        imageBackground: true
+      });
     }
 
-    if (block.find('form')) {
-      features.formInput = true;
+    if (block.find('form').length > 0) {
+      features = _.assign({}, features, {
+        formInput: true
+      });
     }
 
     return features;
+  }
+
+  getBlockSource (block) {
+    const blockSource = _.trimEnd(_.trimStart(
+      block
+        .clone()
+        .removeAttr('data-type') // Remove junk attributes.
+        .removeAttr('data-title')
+        .removeAttr('data-picture')
+        .wrap('<div/>')
+        .parent()
+        .html()
+    ));
+
+    return blockSource;
   }
 
   parseHTMLBlocks ($, blocks) {
@@ -230,20 +258,8 @@ class ParseHTML {
         blockCategory = _.findIndex(manifestObject.blocks, ['type', blockType]);
       }
 
-      // Get block source.
-      const blockSource = _.trimEnd(_.trimStart(
-        block
-          .clone()
-          .removeAttr('data-type') // Remove junk attributes.
-          .removeAttr('data-title')
-          .removeAttr('data-picture')
-          .wrap('<div/>')
-          .parent()
-          .html()
-      ));
-
+      const blockSource = self.getBlockSource(block);
       const features = self.getBlockFeatures(block);
-      console.log(blockHash.toString());
 
       // Assign block to category in manifest file.
       manifestObject.blocks[blockCategory] = _.assign({}, manifestObject.blocks[blockCategory], {
