@@ -3,12 +3,11 @@ const fs = require('fs');
 const _ = require('lodash');
 const path = require('path');
 const globals = require('./globals');
-const createPackage = require('./create-package');
 const captureElementVisualRepresentation = require('./capture-element-visual-representation');
 const utilities = require('./utilities');
 
 class ParseHTML {
-  constructor (htmlPath, manifestObject, buildDir, takePictures = false) {
+  constructor (htmlPath, manifestObject, buildDir, templateName, takePictures = false, callback) {
     this._blocksCount = 0;
 
     this._htmlFile = null;
@@ -17,6 +16,9 @@ class ParseHTML {
     this._manifest = manifestObject;
     this._buildDir = buildDir;
     this._takePictures = takePictures;
+    this._templateName = templateName;
+
+    this._callback = callback;
 
     this._takePicturesCallstack = [];
 
@@ -44,6 +46,7 @@ class ParseHTML {
         'http://code.jquery.com/jquery.js'
       ],
       done: (err, window) => {
+        this.setTemplateName();
         this.parseHTML(err, window);
       }
     });
@@ -59,6 +62,14 @@ class ParseHTML {
 
     // Add blocks to manifest file.
     this.parseHTMLBlocks($, blocks);
+  }
+
+  setTemplateName () {
+    let manifestObject = this._manifest;
+
+    manifestObject.name = this._templateName;
+
+    this._manifest = manifestObject;
   }
 
   parseHTMLAssets ($, assets) {
@@ -286,15 +297,11 @@ class ParseHTML {
     this._manifest = manifestObject;
     this._takePicturesCallstack = callStack;
 
-    this.saveManifestFile();
+    this._callback(manifestObject);
 
     if (this._takePictures) {
       captureElementVisualRepresentation(this._takePicturesCallstack, this._buildDir);
     }
-  }
-
-  saveManifestFile () {
-    createPackage(this._manifest, this._buildDir);
   }
 }
 

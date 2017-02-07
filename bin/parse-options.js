@@ -6,6 +6,10 @@ function parseOptions (options) {
     return false;
   }
 
+  if (!options.name) {
+    throw Error('No name defined.');
+  }
+
   if (!options.src) {
     throw Error('No source defined.');
   }

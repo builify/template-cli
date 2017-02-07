@@ -5,7 +5,9 @@ const zip = new require('node-zip')();
 const packageFileName = 'arkio.builify.js';
 
 function createPackage (manifestObject, buildDir, fileName = 'manifest.json') {
-  zip.file(fileName, JSON.stringify(manifestObject, null, 2));
+  const jsonString = JSON.stringify(manifestObject, null, 2);
+
+  zip.file(fileName, jsonString);
 
   const data = zip.generate({
     base64: true,
