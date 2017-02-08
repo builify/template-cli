@@ -1,4 +1,9 @@
 {
+  "name": "template",
+  "core": {
+    "javascript": "",
+    "stylesheet": ""
+  },
   "external": {
     "core": []
   },

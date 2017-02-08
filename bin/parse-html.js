@@ -145,7 +145,7 @@ class ParseHTML {
       });
     }
 
-    if (block.find('.block-video-holder').length) {
+    if (block.find('.background-video-holder').length) {
       features = _.assign({}, features, {
         videoBackground: true
       });
