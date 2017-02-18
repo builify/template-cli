@@ -1,0 +1,13 @@
+{
+  "name": "Arkio",
+  "files": {
+    "html": "./public/index.html",
+    "stylesheet": "./public/assets/template/template.css",
+    "javascript": "./public/assets/template/template.js"
+  },
+  "output": {
+    "dir": "./builder",
+    "name": "arkio.builify.js"
+  },
+  "createThumbnails": false
+}

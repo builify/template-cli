@@ -1,10 +1,14 @@
-const fs = require('fs');
+const fs = require('fs-jetpack');
 const path = require('path');
+const { formatBytes } = require('./utilities');
+
 const zip = new require('node-zip')();
 
-const packageFileName = 'arkio.builify.js';
+function createPackage (manifestObject, buildDir, packageFileName, fileName = 'manifest.json') {
+  if (!manifestObject || !buildDir || !packageFileName) {
+    throw 'Could not create package';
+  }
 
-function createPackage (manifestObject, buildDir, fileName = 'manifest.json') {
   const jsonString = JSON.stringify(manifestObject, null, 2);
 
   zip.file(fileName, jsonString);
@@ -16,7 +20,11 @@ function createPackage (manifestObject, buildDir, fileName = 'manifest.json') {
   const filePath = path.join(buildDir, packageFileName);
   const fileText = `var __BUILIFY_TEMPLATE = "${data}"`;
 
-  fs.writeFileSync(filePath, fileText, 'binary');
+  fs.write(filePath, fileText);
+
+  const info = fs.inspect(filePath);
+
+  console.log(`Created ${packageFileName} with size of ${formatBytes(info.size)}`);
 }
 
 module.exports = createPackage;

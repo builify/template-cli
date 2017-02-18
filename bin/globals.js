@@ -2,6 +2,9 @@ const manifestData = require('./data/manifest.json');
 
 const globals = {};
 
+// Configuration file name
+globals.configurationFilename = 'template.json';
+
 // Directory where command has been executed.
 globals.currentDir = process.cwd();
 
