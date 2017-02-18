@@ -1,5 +1,6 @@
 const fs = require('fs-jetpack');
 const path = require('path');
+const Log = require('./log');
 const globals = require('./globals');
 const generatedData = require('./generated-data');
 const getStyling = require('./get-styling');
@@ -65,10 +66,16 @@ function formatManifest (manifestObject, ...arguments) {
               ]
             }
           });
+
+          Log(Log.ASSET, `Adding "${value}" (${target})`);
         } else if (type === 'typography') {
           manifestObject.design.typography.size[target] = value;
+
+          Log(Log.CSS, `Set ${target} value to "${value}".`);
         } else if (type === 'color') {
           manifestObject.design.colors[target] = value;
+
+          Log(Log.CSS, `Set ${target} value to "${value}".`);
         } else if (type === 'block') {
           let blockCategory = _findIndex(manifestObject.blocks, ['type', target]);
 
@@ -89,6 +96,8 @@ function formatManifest (manifestObject, ...arguments) {
               value
             ]
           });
+
+          Log(Log.HTML, `Adding "${value.title}" (${target})`);
         } else if (type === 'config') {
           manifestObject[target] = value;
         }
@@ -107,8 +116,40 @@ function getTemplateName (templateName) {
   }];
 }
 
+function getTemplateversion (templateVersion) {
+  let result = [];
+
+  if (!templateVersion) {
+    const currentDir = getCurrentDirectory();
+    const filePath = path.join(currentDir, 'package.json');
+
+    // Try to get package file.
+    if (fs.exists(filePath) === 'file') {
+      try {
+        const pckg = fs.read(filePath, 'json');
+
+        result.push({
+          type: 'config',
+          target: 'version',
+          value: pckg.version
+        });
+      } catch (e) {
+        throw e;
+      }
+    }
+  } else {
+    result.push({
+      type: 'config',
+      target: 'version',
+      value: templateVersion
+    });
+  }
+
+  return result;
+}
+
 function createManifest (configuration) {
-  const { name, files, output, createThumbnails } = configuration;
+  const { name, version, files, output, createThumbnails } = configuration;
   const {
     html: htmlFilePath,
     stylesheet: stylesheetFilePath,
@@ -121,7 +162,10 @@ function createManifest (configuration) {
 
   const styles = getStyling(stylesheetFilePath, bareManifestObject);
   const javascript = getJavascript(javascriptFilePath);
-  const misc = getTemplateName(name);
+  const misc = [
+    ...getTemplateName(name),
+    ...getTemplateversion(version)
+  ];
 
   parseHTML(htmlFilePath, buildDir, function (HTML) {
     const manifest = formatManifest(bareManifestObject, styles, javascript, HTML, misc);

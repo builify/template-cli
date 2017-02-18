@@ -123,7 +123,6 @@ function parseHTMLAssets ($, assets) {
           'value': assetSource
         });
 
-        console.log(`ASSET: Adding "${assetSource}" (${assetType})`);
         break;
       }
 
@@ -220,8 +219,6 @@ function parseBlocks ($, blocks, buildDir, takePictures = false) {
     });
 
     count++;
-
-    console.log(`HTML: Adding "${blockTitle}" (${blockType})`);
   });
 
   console.log(`Total blocks: ${count}\n`);

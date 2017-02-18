@@ -76,8 +76,6 @@ function getColors (stylesheet, manifestObject) {
         'target': selector,
         'value': val
       })
-
-      console.log(`CSS: Set selector "${selector}" color value to "${val}".`)
     }
   });
 
@@ -95,8 +93,6 @@ function getTypography (stylesheet) {
       'target': 'basefont',
       'value': parseInt(baseFontSize)
     });
-
-    console.log(`CSS: Set font-size value to "${parseInt(baseFontSize)}".`);
   }
 
   if (baselineSize) {
@@ -105,8 +101,6 @@ function getTypography (stylesheet) {
       'target': 'baseline',
       'value': parseFloat(baselineSize)
     });
-
-    console.log(`CSS: Set baseline value to "${parseFloat(baselineSize)}".`);
   }
 
   return result;

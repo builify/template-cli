@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "dependencies": {
+    "chalk": "^1.1.3",
     "command-line-args": "*",
     "css": "*",
     "fs-jetpack": "^0.11.0",
