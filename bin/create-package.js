@@ -6,7 +6,7 @@ const zip = new require('node-zip')();
 
 function createPackage (manifestObject, buildDir, packageFileName, fileName = 'manifest.json') {
   if (!manifestObject || !buildDir || !packageFileName) {
-    throw 'Could not create package';
+    throw Error('Could not create package');
   }
 
   const jsonString = JSON.stringify(manifestObject, null, 2);

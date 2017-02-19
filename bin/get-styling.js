@@ -16,23 +16,23 @@ function getStylesheetFile (fileSource) {
       throw e;
     }
   } else {
-    throw 'No stylesheet file found.';
+    throw Error('No stylesheet file found.');
   }
 }
 
 function getValueOfPropertySelector (stylesheet, _selector, _property) {
   let result = null;
 
-  _map(stylesheet.rules, (rule, i) => {
+  _map(stylesheet.rules, (rule) => {
     const { type, selectors, declarations } = rule;
     const firstSelector = _head(selectors);
 
     if (type === 'rule') {
       if (firstSelector === _selector) {
         _map(declarations, (declaration) => {
-          const { type, property, value } = declaration;
+          const { type: decType, property, value } = declaration;
 
-          if (type === 'declaration') {
+          if (decType === 'declaration') {
             if (property === _property) {
               result = value;
               return false;
@@ -48,7 +48,7 @@ function getValueOfPropertySelector (stylesheet, _selector, _property) {
 
 function parseStylesheet (input) {
   if (!input) {
-    throw 'No stylesheet to parse.';
+    throw Error('No stylesheet to parse.');
   }
 
   const parsedStylesheet = css.parse(input, {}).stylesheet;
@@ -58,24 +58,24 @@ function parseStylesheet (input) {
 
 function getColors (stylesheet, manifestObject) {
   if (!stylesheet || !manifestObject) {
-    throw 'No stylesheet/manifest.';
+    throw Error('No stylesheet/manifest.');
   }
 
   if (!manifestObject.design || !manifestObject.design.colors) {
     return manifestObject;
   }
 
-  let result = [];
+  const result = [];
 
   _map(manifestObject.design.colors, (color, selector) => {
     const val = getValueOfPropertySelector(stylesheet, selector, 'color');
 
     if (!_isNull(val)) {
       result.push({
-        'type': 'color',
-        'target': selector,
-        'value': val
-      })
+        type: 'color',
+        target: selector,
+        value: val
+      });
     }
   });
 
@@ -85,21 +85,21 @@ function getColors (stylesheet, manifestObject) {
 function getTypography (stylesheet) {
   const baseFontSize = getValueOfPropertySelector(stylesheet, 'html', 'font-size');
   const baselineSize = getValueOfPropertySelector(stylesheet, 'body', 'line-height');
-  let result = [];
+  const result = [];
 
   if (baseFontSize) {
     result.push({
-      'type': 'typography',
-      'target': 'basefont',
-      'value': parseInt(baseFontSize)
+      type: 'typography',
+      target: 'basefont',
+      value: parseInt(baseFontSize, 10)
     });
   }
 
   if (baselineSize) {
     result.push({
-      'type': 'typography',
-      'target': 'baseline',
-      'value': parseFloat(baselineSize)
+      type: 'typography',
+      target: 'baseline',
+      value: parseFloat(baselineSize)
     });
   }
 
@@ -108,15 +108,15 @@ function getTypography (stylesheet) {
 
 function getFileAsset (file) {
   return [{
-    'type': 'asset',
-    'target': 'stylesheet',
-    'value': file
+    type: 'asset',
+    target: 'stylesheet',
+    value: file
   }];
 }
 
 function getStyles (fileSource, manifestObject) {
   if (!fileSource) {
-    throw 'No source defined';
+    throw Error('No source defined');
   }
 
   const file = getStylesheetFile(fileSource);

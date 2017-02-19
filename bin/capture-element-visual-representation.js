@@ -2,11 +2,10 @@ const _ = require('lodash');
 const webshot = require('webshot');
 const Jimp = require('jimp');
 const globals = require('./globals');
-const createPackage = require('./create-package');
 
 let dir = null;
 
-function takeDaShot (stack, buildDir) {
+function takeDaShot (stack) {
   if (stack.length > 0) {
     const len = stack.length - 1;
     const item = stack[len];
@@ -42,7 +41,7 @@ function takeDaShot (stack, buildDir) {
       });
     });
   } else {
-    console.log ('PICTURES DONE');
+    console.log('PICTURES DONE');
   }
 }
 

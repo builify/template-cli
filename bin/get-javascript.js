@@ -10,21 +10,21 @@ function getJavascriptFile (fileSource) {
       throw e;
     }
   } else {
-    throw 'No javascript file found.';
+    throw Error('No javascript file found.');
   }
 }
 
 function getFileAsset (file) {
   return [{
-    'type': 'asset',
-    'target': 'javascript',
-    'value': file
+    type: 'asset',
+    target: 'javascript',
+    value: file
   }];
 }
 
 function getJavascript (fileSource) {
   if (!fileSource) {
-    throw 'No source defined';
+    throw Error('No source defined');
   }
 
   const file = getJavascriptFile(fileSource);

@@ -14,6 +14,10 @@ function Log (type, message) {
       console.log(chalk.bgMagenta(chalk.white(`CSS: ${message}`)));
       break;
 
+    case Log.INFO:
+      console.log(chalk.bgCyan(chalk.white(`INFO: ${message}`)));
+      break;
+
     default:
       break;
   }
@@ -22,5 +26,6 @@ function Log (type, message) {
 Log.CSS = 'css';
 Log.ASSET = 'asset';
 Log.HTML = 'html';
+Log.INFO = 'info';
 
 module.exports = Log;

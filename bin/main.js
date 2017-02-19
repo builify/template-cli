@@ -46,6 +46,8 @@ function parseConfiguration (configuration) {
 }
 
 function formatManifest (manifestObject, ...arguments) {
+  let blocksCount = 0;
+
   for (let argument of arguments) {
     if (_isArray(argument)) {
       _map(argument, (arg) => {
@@ -97,6 +99,8 @@ function formatManifest (manifestObject, ...arguments) {
             ]
           });
 
+          blocksCount++;
+
           Log(Log.HTML, `Adding "${value.title}" (${target})`);
         } else if (type === 'config') {
           manifestObject[target] = value;
@@ -104,6 +108,8 @@ function formatManifest (manifestObject, ...arguments) {
       });
     }
   }
+
+  Log(Log.INFO, `In total there are ${blocksCount} blocks.`);
 
   return manifestObject;
 }

@@ -14,7 +14,7 @@ function getHTMLFile (fileSource) {
       throw e;
     }
   } else {
-    throw 'No HTML file found.';
+    throw Error('No HTML file found.');
   }
 }
 
@@ -28,6 +28,8 @@ function initializeJSDom (file, callback) {
       callback(err, window);
     }
   });
+
+  return doc;
 }
 
 function getBlockSource (block) {
@@ -99,9 +101,9 @@ function parseHTMLAssets ($, assets) {
     return;
   }
 
-  let result = [];
+  const result = [];
 
-  assets.each(function () {
+  assets.each(function parse () {
     const asset = $(this);
     const assetType = asset.attr('data-asset');
 
@@ -118,9 +120,9 @@ function parseHTMLAssets ($, assets) {
         }
 
         result.push({
-          'type': 'external-asset',
-          'target': assetType,
-          'value': assetSource
+          type: 'external-asset',
+          target: assetType,
+          value: assetSource
         });
 
         break;
@@ -135,11 +137,10 @@ function parseHTMLAssets ($, assets) {
 }
 
 function parseBlocks ($, blocks, buildDir, takePictures = false) {
-  let callStack = [];
-  let result = [];
-  let count = 0;
+  const callStack = [];
+  const result = [];
 
-  blocks.each(function (i) {
+  blocks.each(function () {
     const block = $(this);
     let blockType = null;
     let blockTitle = null;
@@ -201,8 +202,8 @@ function parseBlocks ($, blocks, buildDir, takePictures = false) {
       const fileName = `builder/${blockHash}.jpeg`;
 
       callStack.push({
-        fileName: fileName,
-        query: query,
+        fileName,
+        query,
         id: blockID
       });
     }
@@ -217,11 +218,7 @@ function parseBlocks ($, blocks, buildDir, takePictures = false) {
         source: blockSource
       })
     });
-
-    count++;
   });
-
-  console.log(`Total blocks: ${count}\n`);
 
   if (takePictures) {
     captureElementVisualRepresentation(callStack, buildDir);
@@ -232,12 +229,12 @@ function parseBlocks ($, blocks, buildDir, takePictures = false) {
 
 function parseHTML (fileSource, buildDir, callback) {
   if (!fileSource) {
-    throw 'No source defined';
+    throw Error('No source defined');
   }
 
   const file = getHTMLFile(fileSource);
 
-  initializeJSDom(file, function (err, window) {
+  initializeJSDom(file, (err, window) => {
     const $ = window.$;
     const assets = parseHTMLAssets($, $('[data-asset]'));
     const blocks = parseBlocks($, $('body').children(), buildDir);
