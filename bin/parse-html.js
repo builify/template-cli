@@ -201,7 +201,8 @@ function parseBlocks ($, blocks) {
         id: blockID,
         title: blockTitle,
         thumbnail: `assets/template/${blockHash.toString()}.jpeg`,
-        source: blockSource
+        source: blockSource,
+        query: `.${block.attr('class').split(' ').join('.')}`
       })
     });
   });
