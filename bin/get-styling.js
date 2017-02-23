@@ -38,6 +38,8 @@ function getValueOfPropertySelector (stylesheet, _selector, _property) {
               return false;
             }
           }
+
+          return false;
         });
       }
      }

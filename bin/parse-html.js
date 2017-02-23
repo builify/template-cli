@@ -3,7 +3,6 @@ const path = require('path');
 const jsdom = require('jsdom');
 const _ = require('lodash');
 const utilities = require('./utilities');
-const captureElementVisualRepresentation = require('./capture-element-visual-representation');
 
 function getHTMLFile (fileSource) {
   if (fs.exists(fileSource) === 'file') {
@@ -97,11 +96,11 @@ function getBlockFeatures (block) {
 }
 
 function parseHTMLAssets ($, assets) {
-  if (!$ || !assets) {
-    return;
-  }
-
   const result = [];
+
+  if (!$ || !assets) {
+    return result;
+  }
 
   assets.each(function parse () {
     const asset = $(this);
@@ -136,8 +135,7 @@ function parseHTMLAssets ($, assets) {
   return result;
 }
 
-function parseBlocks ($, blocks, buildDir, takePictures = false) {
-  const callStack = [];
+function parseBlocks ($, blocks) {
   const result = [];
 
   blocks.each(function () {
@@ -196,18 +194,6 @@ function parseBlocks ($, blocks, buildDir, takePictures = false) {
     const blockSource = getBlockSource(block);
     const features = getBlockFeatures(block);
 
-    // Take picture
-    if (takePictures) {
-      const query = `.${block.attr('class').split(' ').join('.')}`;
-      const fileName = `builder/${blockHash}.jpeg`;
-
-      callStack.push({
-        fileName,
-        query,
-        id: blockID
-      });
-    }
-
     result.push({
       type: 'block',
       target: blockType,
@@ -219,10 +205,6 @@ function parseBlocks ($, blocks, buildDir, takePictures = false) {
       })
     });
   });
-
-  if (takePictures) {
-    captureElementVisualRepresentation(callStack, buildDir);
-  }
 
   return result;
 }

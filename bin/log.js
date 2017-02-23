@@ -18,14 +18,19 @@ function Log (type, message) {
       console.log(chalk.bgCyan(chalk.white(`INFO: ${message}`)));
       break;
 
+    case Log.PICTURE:
+      console.log(chalk.bgWhite(chalk.black(`PICTURE: ${message}`)));
+      break;
+
     default:
       break;
   }
 }
 
-Log.CSS = 'css';
-Log.ASSET = 'asset';
-Log.HTML = 'html';
-Log.INFO = 'info';
+Log.CSS = 'logger@css';
+Log.ASSET = 'logger@asset';
+Log.HTML = 'logger@html';
+Log.INFO = 'logger@info';
+Log.PICTURE = 'logger@picture';
 
 module.exports = Log;

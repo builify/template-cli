@@ -155,7 +155,7 @@ function getTemplateversion (templateVersion) {
 }
 
 function createManifest (configuration) {
-  const { name, version, files, output, createThumbnails } = configuration;
+  const { name, version, files, output } = configuration;
   const {
     html: htmlFilePath,
     stylesheet: stylesheetFilePath,

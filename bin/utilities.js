@@ -6,7 +6,7 @@ function hashCode (text) {
     return hash;
   }
 
-  for (let i = 0, len = text.length; i < len; i++) {
+  for (let i = 0, len = text.length; i < len; i += 1) {
     chr = text.charCodeAt(i);
     hash = ((hash << 5) - hash) + chr;
     hash |= 0; // Convert to 32bit integer
