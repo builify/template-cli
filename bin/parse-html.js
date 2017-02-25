@@ -1,21 +1,8 @@
-const fs = require('fs-jetpack');
 const path = require('path');
 const jsdom = require('jsdom');
 const _ = require('lodash');
 const utilities = require('./utilities');
-
-function getHTMLFile (fileSource) {
-  if (fs.exists(fileSource) === 'file') {
-    try {
-      const HTML = fs.read(fileSource, 'utf8');
-      return HTML;
-    } catch (e) {
-      throw e;
-    }
-  } else {
-    throw Error('No HTML file found.');
-  }
-}
+const getFile = require('./get-file');
 
 function initializeJSDom (file, callback) {
  const doc = jsdom.env({
@@ -140,8 +127,11 @@ function parseBlocks ($, blocks) {
 
   blocks.each(function () {
     const block = $(this);
-    let blockType = null;
-    let blockTitle = null;
+    const info = {
+      type: null,
+      title: null,
+      source: null
+    };
 
     block.contents()
       .filter(function () {
@@ -171,38 +161,45 @@ function parseBlocks ($, blocks) {
           }
 
           if (tag === '@title') {
-            blockTitle = tagInfo;
+            info.title = tagInfo;
           } else if (tag === '@category') {
-            blockType = tagInfo;
+            info.type = tagInfo;
+          } else if (tag === '@source') {
+            info.source = tagInfo;
           }
         });
     });
 
     // Remove comments
-    block.contents().each(function () {
+    block.contents().each(function removeComments () {
       if (this.nodeType === 8) {
         $(this).remove();
       }
     });
 
-    if (!blockType || !blockTitle) {
+    if (!info.type || !info.title) {
       return;
     }
 
     const blockID = Math.random().toString(36).substr(2, 7);
-    const blockHash = Math.abs(utilities.hashCode(`${blockType}-${blockTitle}`));
+    const blockHash = Math.abs(utilities.hashCode(`${info.type}-${info.title}`));
     const blockSource = getBlockSource(block);
     const features = getBlockFeatures(block);
 
     result.push({
       type: 'block',
-      target: blockType,
+      target: info.type,
       value: _.assign({}, { features }, {
         id: blockID,
-        title: blockTitle,
+        title: info.title,
         thumbnail: `assets/template/${blockHash.toString()}.jpeg`,
         source: blockSource,
-        query: `.${block.attr('class').split(' ').join('.')}`
+        query: `.${block.attr('class').split(' ').join('.')}`,
+
+        // Development related
+        dev: {
+          source: info.source
+        }
       })
     });
   });
@@ -215,7 +212,7 @@ function parseHTML (fileSource, buildDir, callback) {
     throw Error('No source defined');
   }
 
-  const file = getHTMLFile(fileSource);
+  const file = getFile(fileSource);
 
   initializeJSDom(file, (err, window) => {
     const $ = window.$;

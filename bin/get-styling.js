@@ -1,4 +1,3 @@
-const fs = require('fs-jetpack');
 const css = require('css');
 const {
   map: _map,
@@ -6,19 +5,7 @@ const {
   isNull: _isNull,
   concat: _concat
 } = require('lodash');
-
-function getStylesheetFile (fileSource) {
-  if (fs.exists(fileSource) === 'file') {
-    try {
-      const stylesheet = fs.read(fileSource, 'utf8');
-      return stylesheet;
-    } catch (e) {
-      throw e;
-    }
-  } else {
-    throw Error('No stylesheet file found.');
-  }
-}
+const getFile = require('./get-file');
 
 function getValueOfPropertySelector (stylesheet, _selector, _property) {
   let result = null;
@@ -121,7 +108,7 @@ function getStyles (fileSource, manifestObject) {
     throw Error('No source defined');
   }
 
-  const file = getStylesheetFile(fileSource);
+  const file = getFile(fileSource);
   const stylesheet = parseStylesheet(file);
   const typographyRules = getTypography(stylesheet);
   const colorRules = getColors(stylesheet, manifestObject);

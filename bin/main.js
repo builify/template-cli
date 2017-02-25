@@ -7,6 +7,7 @@ const getStyling = require('./get-styling');
 const getJavascript = require('./get-javascript');
 const parseHTML = require('./parse-html');
 const createPackage = require('./create-package');
+const getFile = require('./get-file');
 const {
   map: _map,
   isArray: _isArray,
@@ -23,16 +24,7 @@ function getConfigurationFile () {
   const fileName = globals.configurationFilename;
   const filePath = path.join(currentDir, fileName);
 
-  if (fs.exists(filePath) === 'file') {
-    try {
-      const configuration = fs.read(filePath, 'json');
-      return configuration;
-    } catch (e) {
-      throw e;
-    }
-  } else {
-    throw 'No template configuration file found.';
-  }
+  return getFile(filePath, 'json');
 }
 
 function parseConfiguration (configuration) {
