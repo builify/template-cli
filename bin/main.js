@@ -93,7 +93,7 @@ function formatManifest (manifestObject, ...arguments) {
 
           blocksCount++;
 
-          Log(Log.HTML, `Adding "${value.title}" (${target})`);
+          Log(Log.HTML, `Adding "${value.title}" (${target}) w/ ID ${value.id}`);
         } else if (type === 'config') {
           manifestObject[target] = value;
         }

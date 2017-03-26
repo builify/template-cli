@@ -181,7 +181,7 @@ function parseBlocks ($, blocks) {
       return;
     }
 
-    const blockID = Math.random().toString(36).substr(2, 7);
+    const blockID = Math.random().toString(36).substr(2, 33);
     const blockHash = Math.abs(utilities.hashCode(`${info.type}-${info.title}`));
     const blockSource = getBlockSource(block);
     const features = getBlockFeatures(block);
