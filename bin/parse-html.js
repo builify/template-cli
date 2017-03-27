@@ -192,7 +192,7 @@ function parseBlocks ($, blocks) {
       value: _.assign({}, { features }, {
         id: blockID,
         title: info.title,
-        thumbnail: `assets/template/${blockHash.toString()}.jpeg`,
+        thumbnail: `assets/template/thumbnails/${blockHash.toString()}.jpeg`,
         source: blockSource,
         query: `.${block.attr('class').split(' ').join('.')}`,
 
