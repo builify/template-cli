@@ -124,7 +124,7 @@ function parseHTMLAssets ($, assets) {
   return result;
 }
 
-function createBlockComponent(blockInfo, blockSource = '') {
+function createBlockComponent (blockInfo, blockSource = '') {
   const { source: fileName } = blockInfo;
 
   const componentHTML = `
