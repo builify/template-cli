@@ -1,6 +1,8 @@
 const path = require('path');
 const jsdom = require('jsdom');
 const _ = require('lodash');
+const fs = require('fs-jetpack');
+const globals = require('./globals');
 const utilities = require('./utilities');
 const getFile = require('./get-file');
 
@@ -122,6 +124,33 @@ function parseHTMLAssets ($, assets) {
   return result;
 }
 
+function createBlockComponent(blockInfo, blockSource = '') {
+  const { source: fileName } = blockInfo;
+
+  const componentHTML = `
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Arkio Template by Trip-Trax 2017</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Crimson+Text:400,700" rel="stylesheet" data-asset="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" data-asset="stylesheet">
+    <link rel="stylesheet" href="../../assets/template/template.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" data-asset="javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.4.1/snap.svg-min.js" data-asset="javascript"></script>
+    <script src="../../assets/template/template.js"></script>
+
+</head>
+<body>
+${blockSource}
+</body>
+`;
+
+  fs.write(path.join(globals.currentDir, 'build', 'components', fileName), componentHTML);
+}
+
 function parseBlocks ($, blocks) {
   const result = [];
 
@@ -182,9 +211,10 @@ function parseBlocks ($, blocks) {
     }
 
     const blockID = Math.random().toString(36).substr(2, 33);
-    const blockHash = Math.abs(utilities.hashCode(`${info.type}-${info.title}`));
     const blockSource = getBlockSource(block);
     const features = getBlockFeatures(block);
+
+    createBlockComponent(info, blockSource);
 
     result.push({
       type: 'block',
@@ -192,7 +222,7 @@ function parseBlocks ($, blocks) {
       value: _.assign({}, { features }, {
         id: blockID,
         title: info.title,
-        thumbnail: `assets/template/thumbnails/${blockHash.toString()}.jpeg`,
+        thumbnail: `assets/template/thumbnails/${blockID.toString()}.jpeg`,
         source: blockSource,
         query: `.${block.attr('class').split(' ').join('.')}`,
 
